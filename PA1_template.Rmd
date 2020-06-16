@@ -1,8 +1,10 @@
 ---
-title: "Reproducible Research: Peer graded assignment 1"
-author: "Indira"
+title: " **Reproducible Research: Peer graded assignment** "
+author: " **Indira Srinivasan** "
 date: "6/16/2020"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ## HELLO!
@@ -222,5 +224,3 @@ Plotting the panel plot
 library(lattice)
 xyplot(steps~interval|myfactor,data=aggimpudf,type="l",layout=c(1,2),main="Steps per interval on weekends and weekdays")
 ```
-
-
