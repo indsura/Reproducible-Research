@@ -14,13 +14,13 @@ output: html_document
 
 ## Task 1
 
-### Loading and preprocessing the data
-### Load the data read.csv()
-### Process/transform the data (if necessary) into a format suitable for your analysis
+Loading and preprocessing the data
+Load the data read.csv()
+Process/transform the data (if necessary) into a format suitable for your analysis
 
 So first I would like to download the activity monitoring dataset!
 
-## Downloading data
+Downloading data
 
 ```{r}
 knitr::opts_chunk$set(echo=TRUE) 
@@ -31,7 +31,7 @@ download.file(url,destfile="./amdataset.zip")
 
 Then, I move to unzipping and reading the dataset using the read.csv function.
 
-## Reading in the data and viewing the unzipped data's first 5 rows
+Reading in the data and viewing the unzipped data's first 5 rows
 
 ```{r}
 unzipdf<-unzip("amdataset.zip")
@@ -39,7 +39,7 @@ activitydf<-read.csv(unzipdf)
 head(activitydf)
 ```
 
-## Tranforming the dataset: Preprocessing
+Tranforming the dataset: Preprocessing
 
 ```{r}
 transformeddf<-na.omit(activitydf)
@@ -48,9 +48,9 @@ head(transformeddf)
 
 ## Task 2
 
-### What is mean total number of steps taken per day? 
+What is mean total number of steps taken per day? 
 
-## Creating a histogram of the total number of steps taken each day
+Creating a histogram of the total number of steps taken each day
 ```{r}
 library(dplyr)
 ## Grouping the data by date
@@ -63,59 +63,63 @@ qplot(totsteps$steps,binwidth=1000,main="Total number of steps taken each day",x
 
 ```
 
-## Reporting the mean of the total number of steps taken per day
+Reporting the mean of the total number of steps taken per day
 ```{r}
 mean(totsteps$steps)
 
 ```
-## Reporting the median of the total number of steps taken per day
+Reporting the median of the total number of steps taken per day
 ```{r}
 median(totsteps$steps)
 ```
 
 ## Task 3
 
-### What is the average daily activity pattern?
+What is the average daily activity pattern?
 
 
-## A time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-```{r}
+A time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+```{r echo=FALSE}
 ## Grouping the data by interval
-groupedbyinterval<-group_by(transformeddf,interval)
+transformedwodate<-transformeddf[,-2]
+groupedbyinterval<-group_by(transformedwodate,interval)
 ## Finding out the mean per interval
 meanperinterval<-summarize_all(groupedbyinterval,mean)
-head(meanperinterval)
+
+```
+
 ## Plotting
+```{r}
 plot(steps~interval,data=meanperinterval,type="l",main="Average number of steps per interval")
 ```
 
-## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps? 
+Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps? 
 ```{r}
 meanperinterval[which.max(meanperinterval$steps),1]
 ```
 ## Task 4
 
-### Imputing missing values
+Imputing missing values
 
-### Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
-### Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NA/NAs)
+Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NA/NAs)
 
-### Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-### Create a new dataset that is equal to the original dataset but with the missing data filled in.
+Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-## Creating a clone of our activity monitoring dataset to impute:
+Creating a clone of our activity monitoring dataset to impute:
 ```{r}
 imputeddf<-activitydf
 ```
 
-## Checking the number of missing values in the activity dataset:
+Checking the number of missing values in the activity dataset:
 ```{r}
 sum(is.na(activitydf))
 ```
 
-## Imputing the missing values with the mean of each interval
+Imputing the missing values with the mean of each interval
 ```{r}
 for(i in 1:nrow(imputeddf)){
   while(is.na(imputeddf$steps[i])){
@@ -129,58 +133,62 @@ for(i in 1:nrow(imputeddf)){
  
 ```
 
-## Confirming if there are any missing values left in the dataset
+Confirming if there are any missing values left in the dataset
 ```{r}
 sum(is.na(imputeddf))
 ```
 
-## Do these values differ from the estimates from the first part of the assignment? 
+Do these values differ from the estimates from the first part of the assignment? 
 ```{r}
 newgroupedbydate<-group_by(imputeddf,date)
 newtotstepsperday<-summarize_all(newgroupedbydate,sum)
 ```
 
-### Answer a): Previous mean: 10766.19, New mean: 10766.19. Therefore, the mean stays the same.
-### This phenomenon occurs, because we have imputed the values with the mean of those respective
-### intervals. Interval 0 gets the mean of the interval 0 and so on and so forth. Calculating
-### the average value/ measure of central tendency is just strengthened by imputing the missing
-### values with the mean (again, a measure of central tendency). New mean:
+Answer a): Previous mean: 10766.19, New mean: 10766.19. Therefore, the mean stays the same.
+This phenomenon occurs, because we have imputed the values with the mean of those respective intervals. Interval 0 gets the mean of the interval 0 and so on and so forth. Calculating the average value/ measure of central tendency is just strengthened by imputing the missing values with the mean (again, a measure of central tendency). 
 
+New mean:
 ```{r}
 mean(newtotstepsperday$steps)
 ```
 
 
-### Answer b): Previous median: 10765, New median: 10766.19. Therefore, the median changes.
-### By replacing the missing values with the mean, we are increasing the count of the most 
-### occuring values and hence increasing the median.New median: 
+Answer b): Previous median: 10765, New median: 10766.19. Therefore, the median changes. By replacing the missing values with the mean, we are increasing the count of the most occuring values and hence increasing the median.
+
+New median: 
 ```{r}
 median(newtotstepsperday$steps)
 ```
 
 
-## What is the impact of imputing missing data on the estimates of the total daily number of steps?
+What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-### Before imputing: 
+Before imputing: 
 ```{r}
 sum(activitydf$steps,na.rm=TRUE)
 ```
 
-### After imputing:
+After imputing:
 ```{r}
 sum(imputeddf$steps)
 ```
 
-### The total number of steps have increased post imputing as can be seen from above.
+The total number of steps have increased post imputing as can be seen from above.
+
+Plotting a histogram to show increase in total steps
+```{r}
+qplot(newtotstepsperday$steps,main="Total steps each day (imputed)",xlab="Steps",ylab="Count",binwidth=1000)+theme_bw()
+
+```
 
 
 ## Task 5
 
-### Are there differences in activity patterns between weekdays and weekends?
+Are there differences in activity patterns between weekdays and weekends?
 
-### Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
-### Make a panel plot containing a time series plot (type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
+Make a panel plot containing a time series plot (type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
 ```{r}
 imputeddf$date<-as.Date(imputeddf$date)
@@ -204,12 +212,12 @@ imputeddf$myfactor<-factor(imputeddf$myfactor)
 
 ```
 
-## Aggregating the dataset and sorting it by interval and the factor variables
+Aggregating the dataset and sorting it by interval and the factor variables
 ```{r}
 aggimpudf<-aggregate(steps~interval+myfactor, imputeddf, mean)
 ```
 
-## Plotting the panel plot
+Plotting the panel plot
 ```{r}
 library(lattice)
 xyplot(steps~interval|myfactor,data=aggimpudf,type="l",layout=c(1,2),main="Steps per interval on weekends and weekdays")
